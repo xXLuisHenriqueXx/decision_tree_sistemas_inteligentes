@@ -18,7 +18,9 @@ def tune_hyperparameters(X_train, y_train):
         "max_depth": [5, 10, 15, 20, 30],
         "min_samples_split": [2, 5, 10, 20],
         "min_samples_leaf": [1, 5, 10],
-        "criterion": ["gini", "entropy"]
+        "criterion": ["gini", "entropy"],
+        "class_weight": ["balanced", "unbalanced"],  # Balancing classes
+        "splitter": ["best", "random"]
     }
     
     clf = DecisionTreeClassifier(random_state=42)
