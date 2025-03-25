@@ -28,7 +28,7 @@ def try_params(X_train, y_train):
     }
     clf = DecisionTreeClassifier(random_state=0)
     random_search = RandomizedSearchCV(
-        clf, param_distributions=params, n_iter=40, cv=5, n_jobs=-1, random_state=0, verbose=1
+        clf, param_distributions=params, n_iter=40, cv=5, n_jobs=-1, random_state=0
     )
     random_search.fit(X_train, y_train)
     print("Melhores Parâmetros:", random_search.best_params_)
