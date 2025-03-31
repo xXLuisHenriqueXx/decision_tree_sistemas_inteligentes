@@ -50,11 +50,36 @@ def search_params(X_train, y_train):
     print(" -> Best parameters found:", search.best_params_)
     return search.best_estimator_
 
-def show_tree(model, feature_names):
-    plt.figure(figsize=(12, 8))
-    plot_tree(model, filled=True, rounded=True, feature_names=feature_names, class_names=True)
-    plt.title("Decision Tree View")
-    plt.show()
+def show_tree(model, feature_names, output_svg="decision_tree_full.svg"):
+    from sklearn.tree import export_graphviz
+    import subprocess
+
+    dot_file = "tree.dot"
+    export_graphviz(
+        model,
+        out_file=dot_file,
+        feature_names=feature_names,
+        class_names=["Sem medalha", "Com medalha"],
+        filled=True,
+        rounded=True,
+        special_characters=True
+    )
+    
+    # Ajusta o DOT para diminuir o fontsize dos nós
+    with open(dot_file, "r") as f:
+        lines = f.readlines()
+    
+    new_lines = []
+    for idx, line in enumerate(lines):
+        new_lines.append(line)
+        if idx == 0 and "digraph" in line:
+            new_lines.append('    node [fontsize=6, margin=0.05];\n')
+    with open(dot_file, "w") as f:
+        f.writelines(new_lines)
+    
+    # Converte o DOT para SVG (formato vetorial)
+    subprocess.run(["dot", "-Tsvg", dot_file, "-o", output_svg])
+    print("SVG gerado:", output_svg)
 
 def run_ratio_experiment(data, non_medal_ratio):
     print("\n*** Running experiment with:")
@@ -65,7 +90,7 @@ def run_ratio_experiment(data, non_medal_ratio):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
     best_model = search_params(X_train, y_train)
 
-    # show_tree(best_model, list(X.columns))
+    # show_tree(best_model, list(X.columns), "decision_tree_{}_{}.png".format(int(non_medal_ratio * 100), int((1 - non_medal_ratio) * 100)))
     predictions = best_model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
     rep = classification_report(y_test, predictions)
@@ -79,7 +104,7 @@ def run_full_experiment(data):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
     best_model = search_params(X_train, y_train)
 
-    # show_tree(best_model, list(X.columns))
+    show_tree(best_model, list(X.columns), "decision_tree_full.svg")
     predictions = best_model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
     rep = classification_report(y_test, predictions)
@@ -90,9 +115,9 @@ def run_full_experiment(data):
 def main():
     data = load_data()
     run_full_experiment(data)
-    ratios = [0.40, 0.45, 0.50, 0.55, 0.60]
-    for rate in ratios:
-        run_ratio_experiment(data, rate)
+    # ratios = [0.40, 0.45, 0.50, 0.55, 0.60]
+    # for rate in ratios:
+    #     run_ratio_experiment(data, rate)
 
 if __name__ == "__main__":
     main()
