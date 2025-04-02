@@ -1,3 +1,5 @@
 athlete_events_cleaned.csv
 *.dot
 *.svg
+requirements.txt
+.venv
