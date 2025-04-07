@@ -84,7 +84,7 @@ def show_tree(model, feature_names, output_svg="decision_tree_full.svg"):
 def run_ratio_experiment(data, non_medal_ratio):
     print("\n*** Running experiment with:")
     print("   {}% of athletes WITHOUT medals".format(int(non_medal_ratio * 100)))
-    print("   {}% of athletes WITH medals *".format(int((1 - non_medal_ratio) * 100)))
+    print("   {}% of athletes WITH medals ***".format(int((1 - non_medal_ratio) * 100)))
     subset = get_subset(data, non_medal_ratio)
     X, y = prepare_data(subset)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
