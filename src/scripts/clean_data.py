@@ -11,9 +11,11 @@ def main():
 
     df["Sex"] = df["Sex"].map({"M": 1, "F": 0})
 
-    df_clean = df[["Sex", "Age", "Height", "Weight", "Sport", "Medal_won"]].copy()
+    df = df[df["Sport"] == "Swimming"]
 
-    df_clean = pd.get_dummies(df_clean, columns=["Sport"], drop_first=True)
+    df_clean = df[["Sex", "Age", "Height", "Weight", "Team", "Medal_won"]].copy()
+
+    df_clean = pd.get_dummies(df_clean, columns=["Team"], drop_first=True)
 
     df_clean.to_csv("athlete_events_cleaned.csv", index=False)
     

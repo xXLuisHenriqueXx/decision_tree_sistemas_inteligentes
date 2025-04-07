@@ -30,11 +30,11 @@ def get_subset(data, non_medal_ratio):
 
 def search_params(X_train, y_train):
     params = {
-        "max_depth": [5, 10, 15, 20, 30],
-        "min_samples_split": [2, 5, 10, 20],
-        "min_samples_leaf": [1, 5, 10],
+        "max_depth": range(1, 31),
+        "min_samples_split": range(2, 21),
+        "min_samples_leaf": range(1, 10),
         "criterion": ["gini", "entropy"],
-        "class_weight": ["balanced", "unbalanced"],
+        "class_weight": ["balanced", "unbalanced", None],
         "splitter": ["best", "random"]
     }
     model = DecisionTreeClassifier(random_state=0)
@@ -83,14 +83,14 @@ def show_tree(model, feature_names, output_svg="decision_tree_full.svg"):
 
 def run_ratio_experiment(data, non_medal_ratio):
     print("\n*** Running experiment with:")
-    print("    {}% of athletes WITHOUT medals".format(int(non_medal_ratio * 100)))
-    print("   {}% of athletes WITH medals ***".format(int((1 - non_medal_ratio) * 100)))
+    print("   {}% of athletes WITHOUT medals".format(int(non_medal_ratio * 100)))
+    print("   {}% of athletes WITH medals *".format(int((1 - non_medal_ratio) * 100)))
     subset = get_subset(data, non_medal_ratio)
     X, y = prepare_data(subset)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
     best_model = search_params(X_train, y_train)
 
-    # show_tree(best_model, list(X.columns), "decision_tree_{}_{}.png".format(int(non_medal_ratio * 100), int((1 - non_medal_ratio) * 100)))
+    show_tree(best_model, list(X.columns), "decision_tree_{}_{}.svg".format(int(non_medal_ratio * 100), int((1 - non_medal_ratio) * 100)))
     predictions = best_model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
     rep = classification_report(y_test, predictions)
@@ -99,7 +99,7 @@ def run_ratio_experiment(data, non_medal_ratio):
     print(rep)
 
 def run_full_experiment(data):
-    print("\n*** Using the full dataset ***")
+    print("\n** Using the full dataset **")
     X, y = prepare_data(data)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
     best_model = search_params(X_train, y_train)
@@ -115,9 +115,9 @@ def run_full_experiment(data):
 def main():
     data = load_data()
     run_full_experiment(data)
-    # ratios = [0.40, 0.45, 0.50, 0.55, 0.60]
-    # for rate in ratios:
-    #     run_ratio_experiment(data, rate)
+    ratios = [0.40, 0.45, 0.50, 0.55, 0.60]
+    for rate in ratios:
+         run_ratio_experiment(data, rate)
 
 if __name__ == "__main__":
     main()
